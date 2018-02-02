@@ -6,6 +6,7 @@ import (
 	"compress/gzip"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -180,6 +181,20 @@ func SlicesDiff(oldSlice, newSlice []string) (removed, added []string) {
 	}
 
 	added = newSlice
+
+	return
+}
+
+// ReadWholeFile opens and reads whole file and return a body of this file
+// Note that this function should not be used for big files!
+func ReadWholeFile(path string) (body string, err error) {
+	file, err := ioutil.ReadFile(path)
+	if err != nil {
+		fmt.Printf("No mapping file found. Skipping: %v\n", err)
+		return
+	}
+
+	body = string(file)
 
 	return
 }
