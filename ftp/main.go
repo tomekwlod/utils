@@ -3,6 +3,7 @@ package ftp
 import (
 	"errors"
 	"io/ioutil"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -29,25 +30,25 @@ type SearchInput struct {
 	Suffix string
 }
 
-func (ftp Client) newConn() (c *f.ServerConn, err error) {
+func (client Client) newConn() (c *f.ServerConn, err error) {
 	// setting up the ftp client
-	c, err = f.Dial(ftp.Addr + ":" + strconv.Itoa(ftp.Port))
+	c, err = f.Dial(client.Addr + ":" + strconv.Itoa(client.Port))
 	if err != nil {
 		return
 	}
 	// defer c.Quit()
 
 	// auth
-	if ftp.Auth.Username != "" {
-		err = c.Login(ftp.Auth.Username, ftp.Auth.Password)
+	if client.Auth.Username != "" {
+		err = c.Login(client.Auth.Username, client.Auth.Password)
 	}
 
 	return
 }
 
 // https://github.com/jlaffaye/ftp/blob/master/client_test.go <- simple tests
-func (ftpUtils Client) FTPFilesList(in *SearchInput) (newEntries []*f.Entry, err error) {
-	c, err := ftpUtils.newConn()
+func (client Client) FTPFilesList(in *SearchInput) (newEntries []*f.Entry, err error) {
+	c, err := client.newConn()
 	if err != nil {
 		return
 	}
@@ -68,8 +69,8 @@ func (ftpUtils Client) FTPFilesList(in *SearchInput) (newEntries []*f.Entry, err
 	return
 }
 
-func (ftpUtils Client) FTPDownload(filename, targetFilename string) (err error) {
-	c, err := ftpUtils.newConn()
+func (client Client) FTPDownload(filename, targetFilename string) (err error) {
+	c, err := client.newConn()
 	if err != nil {
 		return
 	}
@@ -102,15 +103,29 @@ func (ftpUtils Client) FTPDownload(filename, targetFilename string) (err error) 
 	return
 }
 
-func (ftpUtils Client) Rename(path, target string) (err error) {
+func (client Client) Rename(path, target string) (err error) {
 	// setting up the ftp client
-	c, err := ftpUtils.newConn()
+	c, err := client.newConn()
 	if err != nil {
 		return
 	}
 	defer c.Quit()
 
-	err = c.Rename(path, target)
+	for _, dir := range strings.Split(filepath.Dir(target), "/") {
+		err = c.ChangeDir(dir)
+		if err != nil {
+			err = c.MakeDir(dir)
+			if err != nil {
+				return
+			}
+			err = c.ChangeDir(dir)
+			if err != nil {
+				return
+			}
+		}
+	}
+
+	err = c.Rename(path, filepath.Base(target))
 
 	return
 }
