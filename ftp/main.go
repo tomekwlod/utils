@@ -4,6 +4,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -65,6 +66,8 @@ func (client Client) FTPFilesList(in *SearchInput) (newEntries []*f.Entry, err e
 			newEntries = append(newEntries, entry)
 		}
 	}
+
+	newEntries = sortListByTime(newEntries, "DESC")
 
 	return
 }
@@ -128,4 +131,16 @@ func (client Client) Rename(path, target string) (err error) {
 	err = c.Rename(path, filepath.Base(target))
 
 	return
+}
+
+func sortListByTime(list []*f.Entry, sortType string) []*f.Entry {
+	sort.Slice(list, func(i, j int) bool {
+		if sortType == "ASC" {
+			return list[i].Time.After(list[j].Time)
+		}
+
+		return list[i].Time.Before(list[j].Time)
+	})
+
+	return list
 }
