@@ -48,6 +48,24 @@ func EnvVariable(exportedName string) (variable string, err error) {
 	return
 }
 
+func DoesFileExist(filename string) (fileok bool) {
+	fileok = false
+
+	if _, err := os.Stat(filename); err == nil {
+		fileok = true
+		return
+		// fmt.Println("File" + filename + " exists!")
+	} else if os.IsNotExist(err) {
+		// fmt.Println("File" + filename + " doesn't exist!")
+	} else {
+		// fmt.Println("File" + filename + " probably doesn't exist!")
+		// file may or may not exist. See err for details.
+		// Therefore, do *NOT* use !os.IsNotExist(err) to test for file existence
+	}
+
+	return
+}
+
 // FilesFromDirectory returns a list of files in passed directory.
 // If mustCompile variable passed, only the files that pass the regexp will be returned
 func FilesFromDirectory(directory string, mustCompile string) (files []string) {
