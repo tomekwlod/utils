@@ -1,5 +1,7 @@
 package strings
 
+import "unicode"
+
 func FirstChar(str string) (c string) {
 	if len(str) == 0 {
 		return ""
@@ -15,4 +17,14 @@ func FirstChar(str string) (c string) {
 	c = string(runes[0])
 
 	return
+}
+
+// IsASCII detects if given string contains some special characters
+func IsASCII(s string) bool {
+	for i := 0; i < len(s); i++ {
+		if s[i] > unicode.MaxASCII {
+			return false
+		}
+	}
+	return true
 }
