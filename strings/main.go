@@ -1,6 +1,9 @@
 package strings
 
-import "unicode"
+import (
+	"strings"
+	"unicode"
+)
 
 func FirstChar(str string) (c string) {
 	if len(str) == 0 {
@@ -27,4 +30,21 @@ func IsASCII(s string) bool {
 		}
 	}
 	return true
+}
+
+// LastWord return the last word from the string
+func LastWord(str string) string {
+	exp := SplitString(str)
+	last := exp[len(exp)-1]
+
+	return strings.TrimSpace(last)
+}
+
+// SplitString splits given string by the spaces and dashes and returns a slice of the words
+func SplitString(str string) []string {
+	str = strings.TrimSpace(str)
+
+	str = strings.Replace(str, "-", " ", -1)
+
+	return strings.Fields(str)
 }
