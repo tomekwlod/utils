@@ -14,6 +14,7 @@ import (
 	"regexp"
 	"strings"
 	"sync"
+	"time"
 
 	env "github.com/segmentio/go-env"
 )
@@ -66,9 +67,18 @@ func DoesFileExist(filename string) (fileok bool) {
 	return
 }
 
+type File struct {
+	Filepath string
+	Name     string
+	Time     time.Time
+	Size     int64
+	// date
+}
+
 // FilesFromDirectory returns a list of files in passed directory.
 // If mustCompile variable passed, only the files that pass the regexp will be returned
-func FilesFromDirectory(directory string, mustCompile string) (files []string) {
+func FilesFromDirectory(directory string, mustCompile string) (result []*File) {
+
 	filepath.Walk(directory+"/", func(path string, f os.FileInfo, err error) error {
 		if f.IsDir() == true {
 			return nil
@@ -76,11 +86,12 @@ func FilesFromDirectory(directory string, mustCompile string) (files []string) {
 
 		if mustCompile != "" {
 			r := regexp.MustCompile(mustCompile)
+
 			if r.MatchString(path) {
-				files = append(files, strings.Replace(path, directory+"/", "", -1))
+				result = append(result, &File{strings.Replace(path, directory+"/", "", -1), f.Name(), f.ModTime(), f.Size()})
 			}
 		} else {
-			files = append(files, strings.Replace(path, directory+"/", "", -1))
+			result = append(result, &File{strings.Replace(path, directory+"/", "", -1), f.Name(), f.ModTime(), f.Size()})
 		}
 
 		return nil

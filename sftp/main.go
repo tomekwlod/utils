@@ -1,10 +1,10 @@
 package sftp
 
 import (
-	"fmt"
 	"io"
 	"log"
 	"os"
+	"path/filepath"
 
 	_sftp "github.com/pkg/sftp"
 	"golang.org/x/crypto/ssh"
@@ -31,7 +31,6 @@ func NewClient(c *ClientConfig) (*SFTP, error) {
 	if err != nil {
 		panic("Failed to dial: " + err.Error())
 	}
-	fmt.Println("Successfully connected to ssh server.")
 
 	// open an SFTP session over an existing ssh connection.
 	client, err := _sftp.NewClient(conn)
@@ -49,15 +48,20 @@ func NewClient(c *ClientConfig) (*SFTP, error) {
 
 func (s *SFTP) SendFile(localpath, localfilename, remotepath, remotefilename string) (int64, error) {
 
+	err := s.MkdirAll(remotepath)
+	if err != nil {
+		return 0, err
+	}
+
 	// Create the destination file
-	dstFile, err := s.Create(remotepath + remotefilename)
+	dstFile, err := s.Create(filepath.Join(remotepath, remotefilename))
 	if err != nil {
 		return 0, err
 	}
 	defer dstFile.Close()
 
 	// Open the source file
-	srcFile, err := os.Open(localpath + localfilename)
+	srcFile, err := os.Open(filepath.Join(localpath, localfilename))
 	if err != nil {
 		return 0, err
 	}
