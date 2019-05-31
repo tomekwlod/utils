@@ -77,7 +77,11 @@ type File struct {
 
 // FilesFromDirectory returns a list of files in passed directory.
 // If mustCompile variable passed, only the files that pass the regexp will be returned
-func FilesFromDirectory(directory string, mustCompile string) (result []*File) {
+func FilesFromDirectory(directory string, mustCompile string) (result []*File, err error) {
+
+	if _, err = os.Stat(directory); os.IsNotExist(err) {
+		return nil, err
+	}
 
 	filepath.Walk(directory+"/", func(path string, f os.FileInfo, err error) error {
 		if f.IsDir() == true {
