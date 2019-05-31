@@ -9,9 +9,9 @@ import (
 func main() {
 
 	config := &sftp.ClientConfig{
-		Username: "username",
-		Password: "password",
-		Host:     "iphere",
+		Username: "backup",
+		Password: "CfyQpWp8AW5fvpbEXmAF",
+		Host:     "178.62.101.8",
 		Port:     "22",
 	}
 
