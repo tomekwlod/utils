@@ -19,6 +19,18 @@ import (
 	env "github.com/segmentio/go-env"
 )
 
+// ResolveEnv check the env with the provived name and if doesn't exist
+// it will create it and set value to the provided one
+func ResolveEnv(envName, def string) string {
+	curr := os.Getenv(envName)
+
+	if curr == "" {
+		os.Setenv(envName, def)
+	}
+
+	return os.Getenv(envName)
+}
+
 // AskForConfirmation asks the user for confirmation. A user must type in "yes" or "no" and
 // then press enter. It has fuzzy matching, so "y", "Y", "yes", "YES", and "Yes" all count as
 // confirmations. If the input is not recognized, it will ask again. The function does not return
