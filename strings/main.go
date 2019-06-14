@@ -5,6 +5,12 @@ import (
 	"unicode"
 )
 
+// Length return a real number of Rune characters
+func Length(str string) int {
+	// return utf8.RuneCountInString(str)
+	return len([]rune(str))
+}
+
 func FirstChar(str string) (c string) {
 	if len(str) == 0 {
 		return ""
