@@ -11,8 +11,8 @@ func main() {
 	config := &sftp.ClientConfig{
 		Username: "backup",
 		Password: "CfyQpWp8AW5fvpbEXmAF",
-		Host:     "178.62.101.8",
-		Port:     "22",
+		Host:     "178.62.101.80",
+		Port:     "21",
 	}
 
 	client, err := sftp.NewClient(config)
