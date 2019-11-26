@@ -4,6 +4,7 @@ import (
 	"archive/tar"
 	"bufio"
 	"compress/gzip"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -203,6 +204,47 @@ func StructToMap(entry interface{}) (retval map[string]interface{}) {
 	}
 
 	return
+}
+
+// BodyToString returns the pure json-string data to screen
+func BodyToString(body io.Reader) (string, error) {
+
+	data, err := ioutil.ReadAll(body)
+
+	if err != nil {
+		return "", err
+	}
+
+	return string(data), nil
+}
+
+// PrettyJson returns pretty converted json
+func PrettyJson(i interface{}) (string, error) {
+
+	// printing pretty
+	b, err := json.MarshalIndent(i, "", "  ")
+
+	if err != nil {
+		return "", err
+	}
+
+	// os.Stdout.Write(b)
+	// fmt.Printf("%s", b)
+
+	return string(b), nil
+}
+
+func SliceContains(slice []string, needle string) bool {
+
+	for _, a := range slice {
+
+		if a == needle {
+
+			return true
+		}
+	}
+
+	return false
 }
 
 // SlicesDiff comparef two slices together and returns two slices of the difference
